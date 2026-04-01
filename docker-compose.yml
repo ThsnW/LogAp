@@ -1,0 +1,64 @@
+
+services:
+  # PostgreSQL Database
+  db:
+    image: postgres:16-alpine
+    container_name: logap-db
+    environment:
+      POSTGRES_DB: logap_fleet
+      POSTGRES_USER: logap
+      POSTGRES_PASSWORD: logap123
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - logap-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U logap -d logap_fleet"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  # Spring Boot Backend
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: logap-backend
+    environment:
+      DB_HOST: db
+      DB_PORT: 5432
+      DB_NAME: logap_fleet
+      DB_USER: logap
+      DB_PASSWORD: logap123
+      JWT_SECRET: mySuperSecretKeyForJWTTokenGeneration2024LogApFleetManagementSystemKey
+    ports:
+      - "8080:8080"
+    depends_on:
+      db:
+        condition: service_healthy
+    networks:
+      - logap-network
+    restart: unless-stopped
+
+  # React Frontend
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: logap-frontend
+    ports:
+      - "3000:80"
+    depends_on:
+      - backend
+    networks:
+      - logap-network
+    restart: unless-stopped
+
+volumes:
+  postgres_data:
+
+networks:
+  logap-network:
+    driver: bridge
