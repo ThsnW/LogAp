@@ -549,13 +549,24 @@ function ManutencaoPage() {
                     <input
                       id="custoEstimado"
                       name="custoEstimado"
-                      type="number"
-                      step="0.01"
-                      min="0.01"
+                      type="text"
                       className="form-control"
                       placeholder="0,00"
-                      value={form.custoEstimado}
-                      onChange={handleChange}
+                      value={
+                        form.custoEstimado !== '' && form.custoEstimado !== null && !isNaN(parseFloat(form.custoEstimado))
+                          ? new Intl.NumberFormat('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(parseFloat(form.custoEstimado)) 
+                          : ''
+                      }
+                      onChange={(e) => {
+                        let val = e.target.value.replace(/\D/g, '');
+                        if (!val) {
+                          setForm(prev => ({ ...prev, custoEstimado: '' }));
+                          return;
+                        }
+                        // Divide by 100 to shift decimals, ensuring we get things like "15.00" string
+                        const num = (parseInt(val, 10) / 100).toFixed(2);
+                        setForm(prev => ({ ...prev, custoEstimado: num }));
+                      }}
                       required
                     />
                   </div>

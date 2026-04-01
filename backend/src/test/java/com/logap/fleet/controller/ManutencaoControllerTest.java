@@ -51,7 +51,7 @@ public class ManutencaoControllerTest {
                 .tipoServico("OLEO")
                 .build();
 
-        when(manutencaoService.listarTodas()).thenReturn(Collections.singletonList(dto));
+        when(manutencaoService.listarComFiltros(null, null, null, null, null)).thenReturn(Collections.singletonList(dto));
 
         mockMvc.perform(get("/api/manutencoes")
                 .contentType(MediaType.APPLICATION_JSON))
