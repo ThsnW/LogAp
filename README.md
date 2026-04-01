@@ -194,7 +194,9 @@ O esquema completo está em [`backend/src/main/resources/db/schema.sql`](backend
 - **Tabela `usuarios`**: Necessária para implementar autenticação JWT
 - **Tabela `viagens`**: Necessária para calcular as métricas de quilometragem e volume por categoria no dashboard
 - **Campos de categoria no veículo**: Permite filtrar por Leve/Pesado conforme especificado nas métricas
-- **Índices**: Adicionados para otimizar as consultas SQL do dashboard
+- **Coluna `observacoes` (Manutenções)**: Permite a anotação de detalhes adicionais ou pendências do serviço, flexibilizando o registro para casos não mapeados nativamente, algo comum no cenário logístico real
+- **Filtração Dinâmica (Query com Múltiplos Parâmetros)**: Para suportar a tela de listagem de manutenções, o sistema de banco de dados foi preparado para aceitar filtragem combinada e dinâmica por parâmetros como `placa`, `modelo`, `tipo` de veículo e período de tempo (intervalo `dataInicio` e `dataFim`).
+- **Índices**: Adicionados para otimizar as consultas SQL do dashboard e da busca filtrada
 
 ---
 
@@ -209,7 +211,7 @@ O esquema completo está em [`backend/src/main/resources/db/schema.sql`](backend
 ### Manutenções (CRUD)
 | Método | Rota | Descrição |
 |--------|------|-----------|
-| GET | `/api/manutencoes` | Listar todas as manutenções |
+| GET | `/api/manutencoes` | Listar manutenções (Suporta query params dinâmicos: `?placa`, `?modelo`, `?tipo`, `?dataInicio`, `?dataFim`) |
 | GET | `/api/manutencoes/{id}` | Buscar manutenção por ID |
 | POST | `/api/manutencoes` | Criar nova manutenção |
 | PUT | `/api/manutencoes/{id}` | Atualizar manutenção |
